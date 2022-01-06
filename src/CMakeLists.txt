@@ -1,7 +1,6 @@
-add_executable(positionbaseddynamics main.cpp glad.c datatypes.h)
+add_executable(positionbaseddynamics main.cpp datatypes.h clothsimulation.h clothsimulation.cpp)
 
-target_include_directories(positionbaseddynamics PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
-target_link_libraries(positionbaseddynamics glfw)
+add_dependencies(positionbaseddynamics OpenGL::OpenGL)
+target_link_libraries(positionbaseddynamics ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})
 
 install(TARGETS positionbaseddynamics RUNTIME DESTINATION bin)

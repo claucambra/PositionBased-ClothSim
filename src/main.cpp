@@ -1,76 +1,81 @@
 #include <iostream>
 #include <math.h>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
+#include <GL/glu.h>
 
-// Vertex Shader source code
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-//Fragment Shader source code
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(0.8f, 0.3f, 0.02f, 1.0f);\n"
-"}\n\0";
+
+#include "clothsimulation.h"
+
+constexpr int RESOLUTION = 256;
+
+constexpr int window_width = 1024;
+constexpr int window_height = 768;
+
+// vbo
+static GLuint ibo = 0;
+static GLuint vbo = 0;
+static GLuint cbo = 0;
+static GLuint nbo = 0;
+
+ClothSimulation simulation(RESOLUTION);
+
+void init_buffers() {
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &cbo);
+    glGenBuffers(1, &nbo);
+    glGenBuffers(1, &ibo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * simulation.vertices.size(),
+                 &simulation.vertices, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void display() {
+
+}
 
 int main(int argc, char **argv) {
     std::cout << "Hello, world!" << std::endl;
 
-    glfwInit();
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+    glutInitWindowSize(window_width, window_width);
+    glutCreateWindow("Position-Based Dynamics");
+    glutDisplayFunc(display);
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glewInit();
 
-    GLfloat vertices[] =
-    {
-        -0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,
-        0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,
-        0.0f, 0.5f * float(sqrt(3)) / 2, 0.0f
-    };
+    glewInit();
 
-    GLFWwindow* window = glfwCreateWindow(1024, 768, "PositionBasedDynamics", NULL, NULL);
-    if(window == NULL) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glEnable(GL_DEPTH_TEST);
 
-    gladLoadGL();
-    glViewport(0,0, 1024, 768);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    GLuint vertexShader = glad_glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+    GLfloat mat_specular[] = { 0.8, 0.8, 0.8, 1.0 };
+    GLfloat mat_shininess[] = { 50.0 };
+    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+    glShadeModel (GL_SMOOTH);
 
-    GLuint fragmentShader = glad_glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-    GLuint shaderProgram = glCreateProgram();
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
+    glViewport(0, 0, window_width, window_height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, (GLfloat)window_width / (GLfloat) window_height, 0.1, 10.0);
+    glTranslatef(0.0, 0.0, -6.0);
+    glRotated(300, 1, 0, 0);
+    glRotated(270, 0, 0, 1);
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    glLinkProgram(shaderProgram);
-
-    while(!glfwWindowShouldClose(window)) {
-        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    return 0;
+    init_buffers();
+    glutMainLoop();
 }
