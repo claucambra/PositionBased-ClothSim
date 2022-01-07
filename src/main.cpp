@@ -78,7 +78,7 @@ void display() {
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &IBO);
 
-    if (frames % 2000 == 0)
+    if (frames % 750 == 0)
         simulation.reset();
 
     glutSwapBuffers();

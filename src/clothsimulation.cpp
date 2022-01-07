@@ -32,6 +32,7 @@ void ClothSimulation::reset()
     indices.resize(0);
 
     // Create a 256*256 flat cloth mesh
+    # pragma omp parallel for
     for (int row = 0; row < resolution; row++) {
 
         for (int column = 0; column < resolution; column++) {
@@ -67,6 +68,7 @@ void ClothSimulation::reset()
 
     update_normals();
 
+    # pragma omp parallel for
     for (int row = 0; row < resolution - 1; row++) {
         int base = row * resolution;
         indices.push_back(base);
@@ -82,9 +84,22 @@ void ClothSimulation::reset()
 
 float ClothSimulation::inv_sqrt(float number)
 {
-    return 1.0 / sqrt(number);
-}
+    // Thank John Carmack for this one
+    // QUAKE 3 INVERSE SQRT ALGO
+    long i;
+    float x2, y;
+    const float threehalfs = 1.5F;
 
+    x2 = number * 0.5F;
+    y  = number;
+    i  = * ( long * ) &y;
+    i  = 0x5f3759df - ( i >> 1 );
+    y  = * ( float * ) &i;
+    y  = y * ( threehalfs - ( x2 * y * y ) );
+    // John Carmack genius is now over
+
+    return y;
+}
 
 void ClothSimulation::update_normal(ClothVertex &vertex, int row_difference, int column_difference) const {
     // These are three points spanning a triangle
@@ -93,6 +108,7 @@ void ClothSimulation::update_normal(ClothVertex &vertex, int row_difference, int
     std::array<float, 3> span_horizontal = vertices[vertex.row * resolution + (vertex.column + column_difference)].position;
 
     // XYZ of both spanning vectors
+    # pragma omp parallel for
     for(int i = 0; i < 3; i++) {
         span_vertical[i] -= center[i];
         span_horizontal[i] -= center[i];
@@ -110,6 +126,7 @@ void ClothSimulation::update_normal(ClothVertex &vertex, int row_difference, int
 
 void ClothSimulation::update_normals()
 {
+    #pragma omp parallel for
     for(auto &vertex : vertices) {
         std::memset(&vertex.normal, 0, sizeof(float) * vertex.normal.size());
 
@@ -144,6 +161,7 @@ void ClothSimulation::normalise_normal(ClothVertex &vertex) const
 
 void ClothSimulation::update_positions()
 {
+    #pragma omp parallel for
     for(auto &vertex : vertices) {
         vertex.velocity[2] -= (vertex.position[0] * vertex.position[0] +
                                vertex.position[1] * vertex.position[1] +
@@ -196,9 +214,11 @@ void ClothSimulation::validate_positions()
 {
     std::vector<ClothVertex> buffer(vertices.size());
 
+    #pragma omp parallel for
     for(int i = 0; i < iterations; i++) {
         std::memcpy(buffer.data(), vertices.data(), sizeof(ClothVertex) * vertices.size());
 
+        #pragma omp single
         for (int row = 0; row < resolution - 1; row++) {
             for (int column = 0; column < resolution; column++) {
                 relax_constraint(buffer,
@@ -208,6 +228,7 @@ void ClothSimulation::validate_positions()
             }
         }
 
+        # pragma omp for nowait
         for (int row = 0; row < resolution; row++) {
             for (int column = 0; column < resolution - 1; column++) {
                 relax_constraint(buffer,
@@ -217,6 +238,7 @@ void ClothSimulation::validate_positions()
             }
         }
 
+        # pragma omp for nowait
         for (int row = 0; row < resolution - 2; row++) {
             for (int column = 0; column < resolution; column++) {
                 relax_constraint(buffer,
@@ -226,6 +248,7 @@ void ClothSimulation::validate_positions()
             }
         }
 
+        # pragma omp for nowait
         for (int row = 0; row < resolution; row++) {
             for (int column = 0; column < resolution - 2; column++) {
                 relax_constraint(buffer,
@@ -235,6 +258,7 @@ void ClothSimulation::validate_positions()
             }
         }
 
+        # pragma omp for nowait
         for (int row = 0; row < resolution - 1; row++) {
             for (int column = 0; column < resolution - 1; column++) {
                 relax_constraint(buffer,
@@ -244,6 +268,7 @@ void ClothSimulation::validate_positions()
             }
         }
 
+        # pragma omp for nowait
         for (int row = 1; row < resolution; row++) {
             for (int column = 0; column < resolution - 1; column++) {
                 relax_constraint(buffer,
@@ -253,6 +278,7 @@ void ClothSimulation::validate_positions()
             }
         }
 
+        # pragma omp single
         for (auto &vertex : buffer) {
             adjust_positions(vertex);
         }
