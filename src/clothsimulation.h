@@ -25,14 +25,29 @@ class ClothSimulation
 {
 public:
     // Resolution affects the number of vertices in the cloth mesh
-    ClothSimulation(int resolution);
+    ClothSimulation();
+
+    void reset();
+
+    static float inv_sqrt(float number);
+    void update_normal(ClothVertex &vertex, int row_difference, int column_difference) const;
+    void normalise_normal(ClothVertex &vertex) const;
+    void adjust_positions(ClothVertex &vertex) const;
+    void relax_constraint(std::vector<ClothVertex> &buffer, int row, int column, float constraint) const;
 
     void update_normals();
+    void update_positions();
+    void validate_positions();
 
     std::vector<ClothVertex> vertices;
+    std::vector<int> indices;
+
+    static constexpr int resolution = 16;
+    static constexpr float time_step = 0.01;
+    static constexpr int iterations = 128;
+    static constexpr float bias = 0.17;
 
 private:
-    int m_resolution;
     float m_constraint_two;
     float m_constraint_diagonal;
 };

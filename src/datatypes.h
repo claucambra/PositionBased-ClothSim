@@ -18,55 +18,12 @@
 #pragma once
 #include <array>
 
-class Vertex {
-public:
+struct ClothVertex {
     int id;
     std::array<float, 3> position;
     std::array<float, 3> normal;
     std::array<float, 3> velocity;
     std::array<float, 4> color;
-};
-
-class ClothVertex : public Vertex {
-public:
     int row;
     int column;
-};
-
-class Edge {
-public:
-    int triangles[2];
-    int vertices[4]; // [p1, p2, p3, p4] from the PBD paper
-};
-
-class Triangle {
-public:
-    int vertices[3];
-};
-
-class Mesh {
-public:
-    Vertex *vertices;
-    Triangle *triangles;
-};
-
-class ClothVertexData {
-public:
-    int vertexID; // don't know if this is needed
-    float mass;
-    float invmass;
-};
-
-class ClothEdge {
-public:
-    uint edgeID;
-    float initialDihedralAngle;
-    float initialLength;
-};
-
-class ClothTriangleData {
-public:
-    uint triangleID; // don't know if this is needed
-    int neighbourIDs[3];
-    float mass;
 };
