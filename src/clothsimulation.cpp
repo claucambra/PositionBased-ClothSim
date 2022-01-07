@@ -38,7 +38,6 @@ void ClothSimulation::reset()
         for (int column = 0; column < resolution; column++) {
             ClothVertex vertex;
 
-            vertex.id = row + column;
             vertex.row = row;
             vertex.column = column;
 
