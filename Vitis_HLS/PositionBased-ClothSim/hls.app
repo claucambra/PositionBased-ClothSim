@@ -1,4 +1,4 @@
-<project xmlns="com.autoesl.autopilot.project" top="process_cloth" name="PositionBased-ClothSim">
+<project xmlns="com.autoesl.autopilot.project" name="PositionBased-ClothSim" top="process_cloth">
     <includePaths/>
     <libraryPaths/>
     <Simulation>
@@ -6,10 +6,10 @@
     </Simulation>
     <files xmlns="">
         <file name="../../src/testbench.cpp" sc="0" tb="1" cflags=" -Wno-unknown-pragmas" csimflags=" -Wno-unknown-pragmas" blackbox="false"/>
-        <file name="src/process_cloth.h" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
-        <file name="src/process_cloth.cpp" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
-        <file name="src/clothkernel.h" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
         <file name="src/clothkernel.cpp" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
+        <file name="src/clothkernel.h" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
+        <file name="src/process_cloth.cpp" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
+        <file name="src/process_cloth.h" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
     </files>
     <solutions xmlns="">
         <solution name="solution1" status="active"/>

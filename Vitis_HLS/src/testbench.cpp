@@ -24,7 +24,7 @@ int main() {
 	const int resolution = 36;
 	const int num_vertices = resolution * resolution;
 	const float time_step = 0.025;
-	const int iterations = 128;
+	const int iterations = 64;
 	const float bias = 0.17;
 
 	ClothVertex vertices_in[2048];
