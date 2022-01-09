@@ -43,7 +43,7 @@ void ClothKernel::update_positions(ClothVertex vertices_in[], ClothVertex vertic
 
 void ClothKernel::relax_constraint(ClothVertex &vertex_a,
 		 	 	 	 	 	 	   ClothVertex &vertex_b,
-								   float constraint,
+								   float constraint_in,
 								   float bias)
 {
     // displacement vector
@@ -55,7 +55,7 @@ void ClothKernel::relax_constraint(ClothVertex &vertex_a,
                                   delta[1] * delta[1] +
                                   delta[2] * delta[2]);
 
-    const float factor = (1.0f - constraint * invlen) * bias;
+    const float factor = (1.0f - constraint_in * invlen) * bias;
 
     vertex_a.position[0] -= delta[0] * factor;
     vertex_a.position[1] -= delta[1] * factor;

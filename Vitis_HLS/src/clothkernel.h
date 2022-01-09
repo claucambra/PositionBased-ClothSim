@@ -31,7 +31,7 @@ public:
 
 	static void relax_constraint(ClothVertex &vertex_a,
  	 	 	   	   	   	   	     ClothVertex &vertex_b,
-								 float constraint,
+								 float constraint_in,
 								 float bias);
 
 	static void update_positions(ClothVertex vertices_in[],
