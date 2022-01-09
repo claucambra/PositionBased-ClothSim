@@ -14,3 +14,5 @@ solution1/
 .cproject
 .project
 .vitis*
+vitis_hls.log
+

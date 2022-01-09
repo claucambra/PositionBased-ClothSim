@@ -42,7 +42,7 @@ public:
     std::vector<ClothVertex> vertices;
     std::vector<int> indices;
 
-    static constexpr int resolution = 64;
+    static constexpr int resolution = 28;
     static constexpr float time_step = 0.025;
     static constexpr int iterations = 128;
     static constexpr float bias = 0.17;
