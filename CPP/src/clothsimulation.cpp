@@ -41,8 +41,8 @@ void ClothSimulation::reset()
             vertex.row = row;
             vertex.column = column;
 
-            vertex.position[0] = row * 4.0f / (resolution - 1) - 2.25;      // X
-            vertex.position[1] = column * 4.0f / (resolution - 1 ) - 2.25;  // Y
+            vertex.position[0] = row * 4.0f / (resolution - 1) - 2;      // X
+            vertex.position[1] = column * 4.0f / (resolution - 1 ) - 2;  // Y
             vertex.position[2] = 2;                                         // Z
 
             vertex.color[0] = 1;                            // R

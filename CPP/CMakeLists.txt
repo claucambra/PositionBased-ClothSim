@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(positionbaseddynamics)
+project(pb-clothsim)
 
 cmake_policy(SET CMP0072 NEW)
 

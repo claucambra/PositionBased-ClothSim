@@ -68,11 +68,12 @@ void display() {
     // NOT GL_TRIANGLES, otherwise you'll just get a grid of triangles
     glDrawElements(GL_TRIANGLE_STRIP, simulation.indices.size(), GL_UNSIGNED_INT, 0);
 
+    // Index 0 is for positions, index 2 is for normals, and index 3 is for color. Don't change the first args!
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, position));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, normal));
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, color));
-    glEnableVertexAttribArray(1); // Vertex normals
-    glEnableVertexAttribArray(2); // Vertex colors
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, normal));
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, color));
+    glEnableVertexAttribArray(2); // Vertex normals
+    glEnableVertexAttribArray(3); // Vertex colors*/
 
     glBindVertexArray(0);
     glDeleteBuffers(1, &VBO);
@@ -100,11 +101,11 @@ void init_buffers() {
                   &simulation.indices.front(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, position));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, normal));
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, color));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, normal));
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(ClothVertex), (void*)offsetof(ClothVertex, color));
     glEnableVertexAttribArray(0); // Vertex positions
-    glEnableVertexAttribArray(1); // Vertex normals
-    glEnableVertexAttribArray(2); // Vertex colors
+    glEnableVertexAttribArray(2); // Vertex normals
+    glEnableVertexAttribArray(3); // Vertex colors*/
 
     glBindVertexArray(0);
     glDeleteBuffers(1, &VBO);
