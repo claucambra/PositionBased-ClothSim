@@ -8,3 +8,9 @@ CMakeLists.txt.user
 .clang-format
 CMakeCache.txt
 CMakeFiles
+.apc/
+.settings/
+solution1/
+.cproject
+.project
+.vitis*
