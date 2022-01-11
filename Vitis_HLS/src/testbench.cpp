@@ -21,14 +21,14 @@
 
 int main() {
 
-	const int resolution = 36;
-	const int num_vertices = resolution * resolution;
+	const int resolution = 32;
+	const int num_vertices = 1024;
 	const float time_step = 0.025;
-	const int iterations = 64;
+	const int iterations = 96;
 	const float bias = 0.17;
 
-	ClothVertex vertices_in[2048];
-	ClothVertex vertices_out[2048];
+	ClothVertex vertices_in[1024];
+	ClothVertex vertices_out[1024];
 
 	for (int row = 0; row < resolution; row++) {
 	    for (int column = 0; column < resolution; column++) {
@@ -49,12 +49,12 @@ int main() {
 	float constraint_two = vertices_in[resolution].position[0] - vertices_in[0].position[0];
 	float constraint_dia = sqrt(2 * constraint_two * constraint_two);
 
-	for (int i =0; i < 1000; i++) {
-		process_cloth(vertices_in, vertices_out, resolution, time_step, iterations, bias, constraint_two, constraint_dia);
+	//for (int i =0; i < 1000; i++) {
+		process_cloth(vertices_in, vertices_out, time_step, bias, constraint_two, constraint_dia);
 
 		memset(&vertices_in[0], 0, sizeof(vertices_in));
-		memcpy(&vertices_in[0], &vertices_out[0], sizeof(ClothVertex) * resolution);
+		memcpy(&vertices_in[0], &vertices_out[0], sizeof(ClothVertex) * num_vertices);
 		memset(&vertices_out[0], 0, sizeof(vertices_out));
 
-	}
+	//}
 }

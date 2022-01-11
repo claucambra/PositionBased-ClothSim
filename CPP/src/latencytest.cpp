@@ -27,20 +27,20 @@ int main(int argc, char **argv) {
     auto upd_pos_start = std::chrono::high_resolution_clock::now();
     simulation.update_positions();
     auto upd_pos_stop = std::chrono::high_resolution_clock::now();
-    auto upd_pos_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(upd_pos_stop - upd_pos_start);
-    std::cout << "Time taken by estimating positions: " << upd_pos_duration.count() << " nanoseconds" << std::endl;
+    auto upd_pos_duration = std::chrono::duration_cast<std::chrono::milliseconds>(upd_pos_stop - upd_pos_start);
+    std::cout << "Time taken by estimating positions: " << upd_pos_duration.count() << " milliseconds" << std::endl;
 
     auto val_pos_start = std::chrono::high_resolution_clock::now();
     simulation.validate_positions();
     auto val_pos_stop = std::chrono::high_resolution_clock::now();
-    auto val_pos_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(val_pos_stop - val_pos_start);
-    std::cout << "Time taken by validating and correcting positions: " << val_pos_duration.count() << " nanoseconds" << std::endl;
+    auto val_pos_duration = std::chrono::duration_cast<std::chrono::milliseconds>(val_pos_stop - val_pos_start);
+    std::cout << "Time taken by validating and correcting positions: " << val_pos_duration.count() << " milliseconds" << std::endl;
 
     auto stop = std::chrono::high_resolution_clock::now();
 
-    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
-    std::cout << "Time taken by single cycle: " << duration.count() << " nanoseconds" << std::endl;
+    std::cout << "Time taken by single cycle: " << duration.count() << " milliseconds" << std::endl;
 
     return 0;
 }

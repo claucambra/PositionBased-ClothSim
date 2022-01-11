@@ -28,7 +28,6 @@ float ClothKernel::inv_sqrt(float number)
 void ClothKernel::update_positions(ClothVertex vertices_in[], ClothVertex vertices_out[], int resolution, float time_step)
 {
     for(int i = 0; i < resolution * resolution; i++) {
-#pragma HLS UNROLL
     	ClothVertex vertex = vertices_in[i];
         vertex.velocity[2] -= (vertex.position[0] * vertex.position[0] +
                                vertex.position[1] * vertex.position[1] +
@@ -46,6 +45,8 @@ void ClothKernel::relax_constraint(ClothVertex &vertex_a,
 								   float constraint_in,
 								   float bias)
 {
+#pragma HLS DEPENDENCE variable=vertex_a inter false
+#pragma HLS DEPENDENCE variable=vertex_b inter false
     // displacement vector
     std::array<float, 3> delta = {vertex_a.position[0] - vertex_b.position[0],
     							  vertex_a.position[1] - vertex_b.position[1],
@@ -57,13 +58,17 @@ void ClothKernel::relax_constraint(ClothVertex &vertex_a,
 
     const float factor = (1.0f - constraint_in * invlen) * bias;
 
-    vertex_a.position[0] -= delta[0] * factor;
-    vertex_a.position[1] -= delta[1] * factor;
-    vertex_a.position[2] -= delta[2] * factor;
+    float a_copy[3] = {vertex_a.position[0], vertex_a.position[1], vertex_a.position[2]};
 
-    vertex_b.position[0] += delta[0] * factor;
-    vertex_b.position[1] += delta[1] * factor;
-    vertex_b.position[2] += delta[2] * factor;
+    vertex_a.position[0] = a_copy[0] - delta[0] * factor;
+    vertex_a.position[1] = a_copy[1] - delta[1] * factor;
+    vertex_a.position[2] = a_copy[0] - delta[2] * factor;
+
+    float b_copy[3] = {vertex_b.position[0], vertex_b.position[1], vertex_b.position[2]};
+
+    vertex_b.position[0] += b_copy[0] + delta[0] * factor;
+    vertex_b.position[1] += b_copy[0] + delta[1] * factor;
+    vertex_b.position[2] += b_copy[0] + delta[2] * factor;
 }
 
 
@@ -89,76 +94,66 @@ void ClothKernel::validate_positions(ClothVertex vertices_in[],
 									 int iterations,
 									 float bias)
 {
-	ClothVertex buffer[2048];
+	std::memcpy(&vertices_out[0], &vertices_in[0], sizeof(ClothVertex) * resolution * resolution);
 
     for(int i = 0; i < iterations; i++) {
-        std::memcpy(&buffer[0], &vertices_in[0], sizeof(ClothVertex) * (resolution * resolution));
 
-#pragma HLS PIPELINE
         for (int row = 0; row < resolution - 1; row++) {
             for (int column = 0; column < resolution; column++) {
-                relax_constraint(buffer[row * resolution + column],
-                                 buffer[(row + 1) * resolution + column],
+                relax_constraint(vertices_out[row * resolution + column],
+                				 vertices_out[(row + 1) * resolution + column],
                                  constraint_two,
 								 bias);
             }
         }
 
-#pragma HLS PIPELINE
         for (int row = 0; row < resolution; row++) {
             for (int column = 0; column < resolution - 1; column++) {
-                relax_constraint(buffer[row * resolution + column],
-							     buffer[row * resolution + (column + 1)],
+                relax_constraint(vertices_out[row * resolution + column],
+                				 vertices_out[row * resolution + (column + 1)],
                                  constraint_two,
 								 bias);
             }
         }
 
-#pragma HLS PIPELINE
         for (int row = 0; row < resolution - 2; row++) {
             for (int column = 0; column < resolution; column++) {
-                relax_constraint(buffer[row * resolution + column],
-							     buffer[(row + 2) * resolution + column],
+                relax_constraint(vertices_out[row * resolution + column],
+                				 vertices_out[(row + 2) * resolution + column],
                                  2 * constraint_two,
 								 bias);
             }
         }
 
-#pragma HLS PIPELINE
         for (int row = 0; row < resolution; row++) {
             for (int column = 0; column < resolution - 2; column++) {
-                relax_constraint(buffer[row * resolution + column],
-							     buffer[row * resolution + (column + 2)],
+                relax_constraint(vertices_out[row * resolution + column],
+                				 vertices_out[row * resolution + (column + 2)],
                                  2 * constraint_two,
 								 bias);
             }
         }
 
-#pragma HLS PIPELINE
         for (int row = 0; row < resolution - 1; row++) {
             for (int column = 0; column < resolution - 1; column++) {
-                relax_constraint(buffer[row * resolution + column],
-							     buffer[(row + 1) * resolution + (column + 1)],
+                relax_constraint(vertices_out[row * resolution + column],
+                				 vertices_out[(row + 1) * resolution + (column + 1)],
                                  constraint_dia,
 								 bias);
             }
         }
 
-#pragma HLS PIPELINE
         for (int row = 1; row < resolution; row++) {
             for (int column = 0; column < resolution - 1; column++) {
-                relax_constraint(buffer[row * resolution + column],
-							     buffer[(row - 1) * resolution + (column + 1)],
+                relax_constraint(vertices_out[row * resolution + column],
+                				 vertices_out[(row - 1) * resolution + (column + 1)],
                                  constraint_dia,
 								 bias);
             }
         }
 
         for (int j = 0; j < resolution * resolution; j++) {
-#pragma HLS UNROLL
-            adjust_position(buffer[i]);
+            adjust_position(vertices_out[i]);
         }
     }
-
-    std::memcpy(&vertices_out[0], &buffer[0], sizeof(ClothVertex) * (resolution * resolution));
 }

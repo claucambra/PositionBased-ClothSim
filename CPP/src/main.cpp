@@ -48,7 +48,7 @@ void display() {
     }
 
     // Set up the scene with background and the sphere*/
-    glColor3d(0, 0, 1);
+    glColor3d(0, 1, 0);
     glutSolidSphere(0.97, 100, 100);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);

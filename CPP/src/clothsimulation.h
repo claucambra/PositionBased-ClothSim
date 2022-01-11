@@ -32,8 +32,8 @@ public:
     static float inv_sqrt(float number);
     void update_normal(ClothVertex &vertex, int row_difference, int column_difference) const;
     void normalise_normal(ClothVertex &vertex) const;
-    void adjust_positions(ClothVertex &vertex) const;
-    void relax_constraint(std::vector<ClothVertex> &buffer, int row, int column, float constraint) const;
+    void adjust_position(ClothVertex &vertex) const;
+    void relax_constraint(std::vector<ClothVertex> &buffer, int a, int b, float constraint) const;
 
     void update_normals();
     void update_positions();
@@ -44,7 +44,7 @@ public:
 
     static constexpr int resolution = 32;
     static constexpr float time_step = 0.025;
-    static constexpr int iterations = 64;
+    static constexpr int iterations = 96;
     static constexpr float bias = 0.17;
 
 private:

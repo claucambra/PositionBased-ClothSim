@@ -27,9 +27,7 @@
 
 void process_cloth(ClothVertex vertices_in[],
 				   ClothVertex vertices_out[],
-				   int resolution,
 				   float time_step,
-				   int iterations,
 				   float bias,
 				   float constraint_two,
 				   float constraint_diagonal);
